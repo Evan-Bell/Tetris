@@ -176,11 +176,11 @@ export default class Board {
     for (let i = 0; i < 4; i++) {
       let row = coor[i][0];
       let col = coor[i][1];
-      if (row == this.height - 1 || this.board[row + 1][col] > 1) {
+      if (row === this.height - 1 || this.board[row + 1][col] > 1) {
         flag = false;
       }
     }
-    if (flag != true) {
+    if (flag !== true) {
       this.solidify_piece();
       this.over_stack_check();
     } else {
@@ -336,13 +336,13 @@ export default class Board {
       for (let i = 0; i < 4; i++) {
         let row = coor[i][0];
         let col = coor[i][1];
-        if (col == 0 || this.board[row][col - 1] > 1) {
+        if (col === 0 || this.board[row][col - 1] > 1) {
           flag = false;
         }
       }
     }
 
-    if (flag != true) {
+    if (flag !== true) {
       flag = false; //DOES NOTHING
     } else {
       //REMOVES THE SPOT AT EACH OF COORDINATES AND ADDS ONE BELOW EACH COORDINATE
@@ -369,13 +369,13 @@ export default class Board {
       for (let i = 0; i < 4; i++) {
         let row = coor[i][0];
         let col = coor[i][1];
-        if (col == this.board[0].length - 1 || this.board[row][col + 1] > 1) {
+        if (col === this.board[0].length - 1 || this.board[row][col + 1] > 1) {
           flag = false;
         }
       }
     }
 
-    if (flag != true) {
+    if (flag !== true) {
       flag = false; //DOES NOTHING
     } else {
       //REMOVES THE SPOT AT EACH OF COORDINATES AND ADDS ONE BELOW EACH COORDINATE
@@ -397,10 +397,33 @@ export default class Board {
   move_drop() {
     //SCANS FOR PEICE, WHEN FOUND IT DOES PIECE_FALL() UNTIL PIECE NO LONGER EXISTS
     let check = this.piece_fall();
-    this.score_increase(1, 0);
+    this.score_increase(100);
     clearInterval(this.interval);
     this.interval = setInterval(() => {this.piece_fall()}, this.droptime);
     return check;
+  }
+
+
+  full_drop(){
+    let diff = 0;
+    let coor = this.update_coor();
+    for (let row = 0; row < this.height; row++) {
+      for (let col = 0; col < this.width; col++) {
+        if (this.board[row][col] === 1) {
+
+          //Used to add 2 points times level times the number of levels dropped
+          diff = 2*(row-coor[0][0]); 
+
+          this.board[row][col] = this.board[coor[0][0]][coor[0][1]];
+        }
+      }
+    }
+    for (let i = 0; i < 4; i++) {
+      this.board[coor[i][0]][coor[i][1]] = 1;
+    }
+    this.score_increase(diff*100);
+    this.solidify_piece();
+    this.over_stack_check();
   }
 
 
@@ -429,7 +452,7 @@ export default class Board {
 
 
   next_piece_grab() {
-    if (this.next[0] == 0 || this.next[1] == 0) {
+    if (this.next[0] === 0 || this.next[1] === 0) {
       for (let i = 0; i < 3; i++) {
         this.next[i] = this.gen_piece(false, 0);
       }
@@ -460,7 +483,7 @@ export default class Board {
     //removes old ghost tiles
     for (let row = 0; row < this.height; row++) {
       for (let col = 0; col < this.width; col++) {
-        if (this.board[row][col] == 1) {
+        if (this.board[row][col] === 1) {
           this.board[row][col] = 0;
         }
       }
@@ -489,7 +512,7 @@ export default class Board {
     }
     for (let i = 0; i < 4; i++) {
       let spot = this.board[coor[i][0] + ghost_dist][coor[i][1]];
-      if (spot == 0) {
+      if (spot === 0) {
         this.board[coor[i][0] + ghost_dist][coor[i][1]] = 1;
       }
     }
@@ -510,7 +533,7 @@ export default class Board {
       }
     }
     let cleared_lines_len = rows_clear.length;
-    this.score_increase(0, cleared_lines_len);
+    this.score_increase(cleared_lines_len);
 
     for (let i = 0; i < cleared_lines_len; i++) {
       for (let j = 0; j < this.board[rows_clear[i]].length; j++) {
@@ -546,7 +569,7 @@ export default class Board {
           flag = false;
         }
     }
-    if(flag != true){
+    if(flag !== true){
       let level_score = this.reset_all();
       this.highscore = Math.max(level_score[1], this.highscore);
       this.highlevel = Math.max(level_score[0], this.highlevel);
@@ -583,24 +606,36 @@ export default class Board {
     return [level, score];
   }
 
-  score_increase(increment, lines_cleared) {
-    if (lines_cleared == 0) {
+  score_increase(lines_cleared) {
+    //input of greater than 100 means I want to increment, not lines clear
+
+    if (lines_cleared > 4) {
+      let increment = lines_cleared/100;
       this.score = this.score + increment*(this.level+1);
     } else {
-      if (lines_cleared == 1) {
+      if (lines_cleared === 1) {
         this.score = this.score + (this.level + 1) * 40;
       }
-      if (lines_cleared == 2) {
+      if (lines_cleared === 2) {
         this.score = this.score + (this.level + 1) * 100;
       }
-      if (lines_cleared == 3) {
+      if (lines_cleared === 3) {
         this.score = this.score + (this.level + 1) * 300;
       }
-      if (lines_cleared > 3) {
+      if (lines_cleared === 4) {
         this.score = this.score + (this.level + 1) * 1200;
       }
       this.level_update();
     }
     return this.score;
+  }
+
+  stop_drop(){
+    clearInterval(this.interval);
+  }
+
+  start_drop(){
+    clearInterval(this.interval);
+    this.interval = setInterval(() => {this.piece_fall()}, this.droptime);
   }
 }

@@ -43,7 +43,7 @@ var update_ContainerView = function(props) {
 }
 
 
-class Game_interact extends React.Component {
+class GameInteract extends React.Component {
     constructor(props) {
       super(props);
       this.state = {updated_state: update_ContainerView()};
@@ -85,6 +85,15 @@ class Game_interact extends React.Component {
             case 'h':
                 game_board.move_hold_swap();
                 break;
+            case '-':
+                game_board.stop_drop();
+                break;
+            case '=':
+                game_board.start_drop();
+                break;
+            case 'd':
+                game_board.full_drop();
+                break;
         }
 
         this.update_board();
@@ -111,7 +120,7 @@ class Game_interact extends React.Component {
 
 
 var game_board = new Board(width, height);
-export default Game_interact;
+export default GameInteract;
   
  //ADD TIME DROPS AND TIME DELAY
  //IMPROVE THE CSS/REACT/JS ASPECT OF SHOWING SO IT IS LESS LAGGY AND LOOKS BETTER
