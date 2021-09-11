@@ -52,36 +52,21 @@ class Game_interact extends React.Component {
       this.update_board = this.update_board.bind(this);
       this.handleInput = this.handleInput.bind(this);
 
-      this.handleLeft = this.handleLeft.bind(this);
-      this.handleRight = this.handleRight.bind(this);
-      this.handleRotate = this.handleRotate.bind(this);
-      this.handleDown = this.handleDown.bind(this);
-
     }
 
     update_board() {
         this.setState( prevState => ( {updated_state: update_ContainerView()}));
     }
-  
-    handleLeft() {
-      game_board.move_left();
-      this.update_board();
+
+    componentDidMount(){
+        this.Interval = setInterval(() => {
+            this.update_board();
+        }, 100);
     }
 
-    handleRight() {
-        game_board.move_right();
-        this.update_board();
-      }
-
-    handleRotate() {
-        game_board.rotate_piece();
-        this.update_board();
-      }
-
-    handleDown() {
-        game_board.move_drop();
-        this.update_board();
-      }
+    componentWillUnmount(){
+        clearInterval(this.interval);
+    }
 
     handleInput(event){ //MAKE THIS AUTOCLICK INSTEAD OF HAVING TO GO INTO TEXT BOX
         switch(event.key) {
@@ -108,19 +93,6 @@ class Game_interact extends React.Component {
     render() {
         return (
             <div onKeyDown={this.handleInput} className="TetrisGame">
-                
-                <button onClick={this.handleLeft}>
-                    Left
-                </button>
-                <button onClick={this.handleRight}>
-                    Right
-                </button>
-                <button onClick={this.handleRotate}>
-                    Rotate
-                </button>
-                <button onClick={this.handleDown}>
-                    Down
-                </button>
                 <input />
                 <div className='score-display'>Score: {game_board.score}</div>
                 <div className='level-display'>Level: {game_board.level}</div>
@@ -128,6 +100,7 @@ class Game_interact extends React.Component {
                 <div className='next-display'>Next: {game_board.next}</div>
                 <div className='highscore-display'>Highscore: {game_board.highscore}</div>
                 <div className='highlevel-display'>Highlevel: {game_board.highlevel}</div>
+                <div className='droptime'>droptime: {game_board.droptime}</div>
                 
                 {this.state.updated_state}
                 

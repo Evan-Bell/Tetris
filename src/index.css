@@ -24,7 +24,9 @@ tr.TetrisRow{
   height: 20%;
   width: 100%;
 }
-tr#r3{}
+tr#r2 td{
+  border-bottom: red 1px solid !important;
+}
 
 td.TetrisCell{
   width: 13px;

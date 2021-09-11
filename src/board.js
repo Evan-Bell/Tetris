@@ -56,6 +56,8 @@ export default class Board {
     this.next = [0, 0, 0]; //stores next three not including one in play
     this.highlevel = 0;
     this.highscore = 0;
+    this.droptime = 900;
+    this.interval = setInterval(() => {this.piece_fall()}, this.droptime);
     this.create_board();
   }
 
@@ -180,6 +182,7 @@ export default class Board {
     }
     if (flag != true) {
       this.solidify_piece();
+      this.over_stack_check();
     } else {
       //REMOVES THE SPOT AT EACH OF COORDINATES AND ADDS ONE BELOW EACH COORDINATE
 
@@ -192,7 +195,6 @@ export default class Board {
       }
       this.pivot[0] += 1;
     }
-    this.over_stack_check();
     return flag;
   }
 
@@ -353,8 +355,8 @@ export default class Board {
         this.board[coor[i][0]][coor[i][1] - 1] = typ;
       }
       this.pivot[1] -= 1;
+      this.update_ghost();
     }
-    this.update_ghost();
   }
 
 
@@ -386,8 +388,8 @@ export default class Board {
         this.board[coor[i][0]][coor[i][1] + 1] = typ;
       }
       this.pivot[1] += 1;
+      this.update_ghost();
     }
-    this.update_ghost();
   }
 
 
@@ -396,6 +398,8 @@ export default class Board {
     //SCANS FOR PEICE, WHEN FOUND IT DOES PIECE_FALL() UNTIL PIECE NO LONGER EXISTS
     let check = this.piece_fall();
     this.score_increase(1, 0);
+    clearInterval(this.interval);
+    this.interval = setInterval(() => {this.piece_fall()}, this.droptime);
     return check;
   }
 
@@ -549,9 +553,13 @@ export default class Board {
     }
   } 
 
+  time_drop_calc(){
+    this.droptime = 800*((0.86)**(0.5*(this.level)))+100;
+  }
 
   level_update(){
-    this.level = Math.max(this.level,Math.floor(this.score/100));
+    this.level = Math.max(this.level, Math.floor((2*(this.score/(130*10) - 0.5)+1)));
+    this.time_drop_calc();
   }
 
   reset_all(){
@@ -561,6 +569,7 @@ export default class Board {
     this.board = [];
     this.score = 0;
     this.level = 0;
+    this.droptime = 900;
     this.pivot = [];
     this.coor = [
       [0, 0],
@@ -576,7 +585,7 @@ export default class Board {
 
   score_increase(increment, lines_cleared) {
     if (lines_cleared == 0) {
-      this.score = this.score + increment;
+      this.score = this.score + increment*(this.level+1);
     } else {
       if (lines_cleared == 1) {
         this.score = this.score + (this.level + 1) * 40;
@@ -590,8 +599,8 @@ export default class Board {
       if (lines_cleared > 3) {
         this.score = this.score + (this.level + 1) * 1200;
       }
+      this.level_update();
     }
-    this.level_update();
     return this.score;
   }
 }
