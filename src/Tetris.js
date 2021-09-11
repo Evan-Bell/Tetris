@@ -79,7 +79,7 @@ class GameInteract extends React.Component {
             case 'ArrowDown': 
                 game_board.move_drop();
                 break;
-            case ' ': 
+            case 'ArrowUp': 
                 game_board.rotate_piece();
                 break;
             case 'h':
@@ -91,7 +91,7 @@ class GameInteract extends React.Component {
             case '=':
                 game_board.start_drop();
                 break;
-            case 'd':
+            case ' ':
                 game_board.full_drop();
                 break;
         }
