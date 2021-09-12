@@ -92,7 +92,7 @@ class GameInteract extends React.Component {
                 game_board.start_drop();
                 break;
             case ' ':
-                game_board.full_drop();
+                game_board.hard_drop();
                 break;
         }
 

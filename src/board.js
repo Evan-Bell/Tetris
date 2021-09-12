@@ -404,7 +404,7 @@ export default class Board {
   }
 
 
-  full_drop(){
+  hard_drop(){
     let diff = 0;
     let coor = this.update_coor();
     for (let row = 0; row < this.height; row++) {
