@@ -577,11 +577,11 @@ export default class Board {
   } 
 
   time_drop_calc(){
-    this.droptime = 800*((0.86)**(0.5*(this.level)))+100;
+    this.droptime = 700*((0.86)**(0.5*(this.level)))+200;
   }
 
   level_update(){
-    this.level = Math.max(this.level, Math.floor((2*(this.score/(130*10) - 0.5)+1)));
+    this.level = Math.max(this.level, Math.floor(     (-65+Math.sqrt(13*(325+this.score*2)))/130  ));
     this.time_drop_calc();
   }
 
