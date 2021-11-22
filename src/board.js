@@ -46,6 +46,7 @@ export default class Board {
     this.score = 0;
     this.level = 0;
     this.pivot = [];
+    this.pieces = [2,3,4,5,6,7,8] //tracks for tetris "random generator"
     this.coor = [
       [0, 0],
       [0, 0],
@@ -147,7 +148,10 @@ export default class Board {
         [1, 0], //RELATIVE PIVOT POINT
       ],
     };
-    let piece_num = Math.floor(Math.random() * 7) + 2; //GETS RANDOM INT FROM RANGE [2,8]
+    if(len(this.pieces) === 0){
+      this.pieces = [2,3,4,5,6,7,8];
+    }
+    let piece_num = this.pieces.pop(Math.floor(Math.random() * len(this.pieces))); //GETS RANDOM INT FROM RANGE [2,8]
     if (specific_piece > 1) {
       piece_num = 1 * specific_piece;
     }
@@ -593,6 +597,7 @@ export default class Board {
     this.score = 0;
     this.level = 0;
     this.droptime = 900;
+    this.pieces = [2,3,4,5,6,7,8] //tracks for tetris "random generator"
     this.pivot = [];
     this.coor = [
       [0, 0],
