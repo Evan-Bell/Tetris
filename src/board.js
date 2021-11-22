@@ -148,10 +148,13 @@ export default class Board {
         [1, 0], //RELATIVE PIVOT POINT
       ],
     };
-    if(len(this.pieces) === 0){
+    if(this.pieces.length === 0){
       this.pieces = [2,3,4,5,6,7,8];
     }
-    let piece_num = this.pieces.pop(Math.floor(Math.random() * len(this.pieces))); //GETS RANDOM INT FROM RANGE [2,8]
+    this.pieces = this.pieces.sort(() => {
+      return Math.random() - 0.5;
+    })
+    let piece_num = this.pieces.pop(this.pieces.length-1); //GETS LAST INT FROM RANDOM SORT LIST
     if (specific_piece > 1) {
       piece_num = 1 * specific_piece;
     }
