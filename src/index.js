@@ -4,9 +4,9 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 
 
-import GameInteract from './Tetris.js';
+import Tetris from "./Tetris.js"
 
-ReactDOM.render(<GameInteract /> , document.getElementById('root'));
+ReactDOM.render(<Tetris /> , document.getElementById('root'));
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

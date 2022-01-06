@@ -596,3 +596,4 @@ export default class Board {
     this.interval = setInterval(() => {this.piece_fall()}, this.droptime);
   }
 }
+
