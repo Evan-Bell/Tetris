@@ -63,7 +63,7 @@ export default class Board {
   }
 
   create_board() {
-    //CREATES BLANK 2D ARRAY OF GIVEN SIZE
+    //CREATES BLANK 2D ARRAY OF GIVEN SIZE (HEIGHT AND WIDTH)
     let temp = [];
     for (let row = 0; row < this.height; row++) {
       temp[row] = [];
@@ -71,7 +71,6 @@ export default class Board {
         temp[row][col] = 0; //0;
       }
     }
-
     this.board = temp;
     this.next_piece_grab();
 
@@ -97,7 +96,7 @@ export default class Board {
   gen_piece(mutate, specific_piece) {
     //GENERATES A NEW PIECE
     const piece_codes = {
-      //EACH PIECE HAS A NUMBER AS A KEY (COLOR AND PEICE INDETIFIER) AND A SET OF 4 COORDINATEES
+      //EACH PIECE HAS A NUMBER AS A KEY (COLOR AND PEICE INDETIFIER) AND A SET OF 4 COORDINATEES, AND A PIVOT POINT
       2: [
         [0, 0],
         [1, -1],
@@ -148,7 +147,8 @@ export default class Board {
         [1, 0], //RELATIVE PIVOT POINT
       ],
     };
-    if(this.pieces.length === 0){
+
+    if(this.pieces.length === 0){ //MAKES IT SO THAT EACH PIECE GETS GIVEN EVENLY
       this.pieces = [2,3,4,5,6,7,8];
     }
     this.pieces = this.pieces.sort(() => {
@@ -160,19 +160,19 @@ export default class Board {
     }
     if (mutate) {
       let piece = piece_codes[piece_num];
-      for (let g = 0; g < 4; g++) {
+      for (let g = 0; g < 4; g++) { //SHIFTS THE PIECE OVER TO CENTER OF BOARD INSTEAD OF DEAD TOP
         this.board[piece[g][0] + 1][piece[g][1] + 4] = -piece_num;
       }
 
       this.pivot = piece[4];
       this.pivot[0] += 1;
-      this.pivot[1] += 4; //MOVE THE PIVOT ACCORDINGLY
+      this.pivot[1] += 4; //MOVE THE PIVOT ACCORDINGLY WITH THE PIECE SHIFT ABOVE
       this.update_ghost();
     }
     return piece_num;
   }
 
-  sleep(ms) {
+  sleep(ms) {//USED FOR FALLING TIMEOUT
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
@@ -245,43 +245,13 @@ export default class Board {
       this.board[coor[i][0]][coor[i][1]] = 0;
     }
 
-    //CHECK THAT NEW COOR ARE VALID
-    let new_coor_down = [];
-    for (let i = 0; i < 4; i++) {
-      let temp = [];
-      temp[0] = new_coor[i][0] + 1;
-      temp[1] = new_coor[i][1];
-      new_coor_down[i] = temp;
-    }
-    let new_piv_down = [this.pivot[0] + 1, this.pivot[1]];
+    //GENERATES COORDINATES AND PIV SHIFTED IN EVERY DIR
+    let {new_coor_down, new_piv_down} = this.shift_coor(new_coor, this.pivot, 1, 0);
+    let {new_coor_up, new_piv_up}= this.shift_coor(new_coor, this.pivot, -1, 0);
+    let {new_coor_left, new_piv_left} = this.shift_coor(new_coor, this.pivot, 0, -1);
+    let {new_coor_right, new_piv_right} = this.shift_coor(new_coor, this.pivot, 0, 1);
 
-    let new_coor_up = [];
-    for (let i = 0; i < 4; i++) {
-      let temp = [];
-      temp[0] = new_coor[i][0] - 1;
-      temp[1] = new_coor[i][1];
-      new_coor_up[i] = temp;
-    }
-    let new_piv_up = [this.pivot[0] - 1, this.pivot[1]];
-
-    let new_coor_left = [];
-    for (let i = 0; i < 4; i++) {
-      let temp = [];
-      temp[0] = new_coor[i][0];
-      temp[1] = new_coor[i][1] - 1;
-      new_coor_left[i] = temp;
-    }
-    let new_piv_left = [this.pivot[0], this.pivot[1] - 1];
-
-    let new_coor_right = [];
-    for (let i = 0; i < 4; i++) {
-      let temp = [];
-      temp[0] = new_coor[i][0];
-      temp[1] = new_coor[i][1] + 1;
-      new_coor_right[i] = temp;
-    }
-    let new_piv_right = [this.pivot[0], this.pivot[1] + 1];
-
+    //CHECKS THAT NEW POSSIBLE COOR ARE VALID
     if (this.coor_is_valid(new_coor)) {
       let throw_away;
     } else if (this.coor_is_valid(new_coor_down)) {
@@ -302,7 +272,6 @@ export default class Board {
     }
 
     //GO THROUGH AND REPLACE each coor WITH new_coor TO MAKE ROTATED PIECE
-
     for (let i = 0; i < 4; i++) {
       this.board[new_coor[i][0]][new_coor[i][1]] = typ;
     }
@@ -311,7 +280,35 @@ export default class Board {
     return new_coor;
   }
 
-  coor_is_valid(coors) {
+
+
+  shift_coor(Coordinates, piv, ver, hor){//SHIFTS COOR IN A GIVEN DIR
+    let shifted_coor = []
+    for (let i = 0; i < 4; i++) {
+      let temp = [];
+      temp[0] = Coordinates[i][0] + ver;
+      temp[1] = Coordinates[i][1] + hor;
+      shifted_coor[i] = temp;
+    }
+    let shifted_piv = [piv[0] + ver, piv[1] + hor];
+    return [shifted_coor, shifted_piv];
+  }
+
+  shift_piece(Coordinates, ver, hor){//SHIFTS COOR IN A GIVEN DIR
+    let typ = this.board[Coordinates[0][0]][Coordinates[0][1]];
+      for (let i = 0; i < 4; i++) {
+        this.board[Coordinates[i][0]][Coordinates[i][1]] = 0;
+      }
+      for (let i = 0; i < 4; i++) {
+        this.board[Coordinates[i][0] + ver][Coordinates[i][1] + hor] = typ;
+      }
+      this.pivot[0] += ver;
+      this.pivot[1] += hor;
+      this.update_ghost();
+  }
+
+
+  coor_is_valid(coors) {//CHECKS IF COOR IS VALID
     let flag = true;
     for (let i = 0; i < 4; i++) {
       let row = coors[i][0];
@@ -338,31 +335,9 @@ export default class Board {
   move_left() {
     //CHECKS IF MOVE LEFT IS POSSIBLE, THEN DOES IT, OTHERWISE NOTHING
     let coor = this.update_coor(); //grabs Coordinates
-    let flag = true;
-    if (flag) {
-      for (let i = 0; i < 4; i++) {
-        let row = coor[i][0];
-        let col = coor[i][1];
-        if (col === 0 || this.board[row][col - 1] > 1) {
-          flag = false;
-        }
-      }
-    }
-
-    if (flag !== true) {
-      flag = false; //DOES NOTHING
-    } else {
-      //REMOVES THE SPOT AT EACH OF COORDINATES AND ADDS ONE BELOW EACH COORDINATE
-
-      let typ = this.board[coor[0][0]][coor[0][1]];
-      for (let i = 0; i < 4; i++) {
-        this.board[coor[i][0]][coor[i][1]] = 0;
-      }
-      for (let i = 0; i < 4; i++) {
-        this.board[coor[i][0]][coor[i][1] - 1] = typ;
-      }
-      this.pivot[1] -= 1;
-      this.update_ghost();
+    let new_coor = this.shift_coor(coor, this.pivot, 0, -1)[0];
+    if(this.coor_is_valid(new_coor)){
+      this.shift_piece(coor, 0, -1)
     }
   }
 
@@ -371,31 +346,9 @@ export default class Board {
   move_right() {
     //CHECKS IF MOVE RIGHT IS POSSIBLE, THEN DOES IT, OTHERWISE NOTHING
     let coor = this.update_coor(); //grabs Coordinates
-    let flag = true;
-    if (flag) {
-      for (let i = 0; i < 4; i++) {
-        let row = coor[i][0];
-        let col = coor[i][1];
-        if (col === this.board[0].length - 1 || this.board[row][col + 1] > 1) {
-          flag = false;
-        }
-      }
-    }
-
-    if (flag !== true) {
-      flag = false; //DOES NOTHING
-    } else {
-      //REMOVES THE SPOT AT EACH OF COORDINATES AND ADDS ONE BELOW EACH COORDINATE
-
-      let typ = this.board[coor[0][0]][coor[0][1]];
-      for (let i = 0; i < 4; i++) {
-        this.board[coor[i][0]][coor[i][1]] = 0;
-      }
-      for (let i = 0; i < 4; i++) {
-        this.board[coor[i][0]][coor[i][1] + 1] = typ;
-      }
-      this.pivot[1] += 1;
-      this.update_ghost();
+    let new_coor = this.shift_coor(coor, this.pivot, 0, 1)[0];
+    if(this.coor_is_valid(new_coor)){
+      this.shift_piece(coor, 0, 1)
     }
   }
 
@@ -419,7 +372,7 @@ export default class Board {
         if (this.board[row][col] === 1) {
 
           //Used to add 2 points times level times the number of levels dropped
-          diff = 2*(row-coor[0][0]); 
+          diff = 2*(row-coor[0][0]-1); 
 
           this.board[row][col] = this.board[coor[0][0]][coor[0][1]];
         }
@@ -474,14 +427,10 @@ export default class Board {
 
 
   solidify_piece() {
-    for (let row = 0; row < this.height; row++) {
-      for (let col = 0; col < this.width; col++) {
-        if (this.board[row][col] < 0) {
-          this.board[row][col] = -this.board[row][col];
-        }
-      }
+    let coor = this.update_coor();
+    for (let i = 0; i < 4; i++) {
+      this.board[coor[i][0]][coor[i][1]] *= -1;
     }
-
     this.line_cleared_check();
     this.next_piece_grab();
   }

@@ -50,7 +50,7 @@ function () {
   _createClass(Board, [{
     key: "create_board",
     value: function create_board() {
-      //CREATES BLANK 2D ARRAY OF GIVEN SIZE
+      //CREATES BLANK 2D ARRAY OF GIVEN SIZE (HEIGHT AND WIDTH)
       var temp = [];
 
       for (var row = 0; row < this.height; row++) {
@@ -86,7 +86,7 @@ function () {
     value: function gen_piece(mutate, specific_piece) {
       //GENERATES A NEW PIECE
       var piece_codes = {
-        //EACH PIECE HAS A NUMBER AS A KEY (COLOR AND PEICE INDETIFIER) AND A SET OF 4 COORDINATEES
+        //EACH PIECE HAS A NUMBER AS A KEY (COLOR AND PEICE INDETIFIER) AND A SET OF 4 COORDINATEES, AND A PIVOT POINT
         2: [[0, 0], [1, -1], [1, 0], [1, 1], [1, 0] // RELATIVE PIVOT POINT
         ],
         3: [[0, 0], [0, 1], [1, 0], [1, 1], [0.5, 0.5] //RELATIVE PIVOT POINT
@@ -104,6 +104,7 @@ function () {
       };
 
       if (this.pieces.length === 0) {
+        //MAKES IT SO THAT EACH PIECE GETS GIVEN EVENLY
         this.pieces = [2, 3, 4, 5, 6, 7, 8];
       }
 
@@ -120,12 +121,13 @@ function () {
         var piece = piece_codes[piece_num];
 
         for (var g = 0; g < 4; g++) {
+          //SHIFTS THE PIECE OVER TO CENTER OF BOARD INSTEAD OF DEAD TOP
           this.board[piece[g][0] + 1][piece[g][1] + 4] = -piece_num;
         }
 
         this.pivot = piece[4];
         this.pivot[0] += 1;
-        this.pivot[1] += 4; //MOVE THE PIVOT ACCORDINGLY
+        this.pivot[1] += 4; //MOVE THE PIVOT ACCORDINGLY WITH THE PIECE SHIFT ABOVE
 
         this.update_ghost();
       }
@@ -135,6 +137,7 @@ function () {
   }, {
     key: "sleep",
     value: function sleep(ms) {
+      //USED FOR FALLING TIMEOUT
       return new Promise(function (resolve) {
         return setTimeout(resolve, ms);
       });
@@ -220,49 +223,25 @@ function () {
 
       for (var i = 0; i < 4; i++) {
         this.board[coor[i][0]][coor[i][1]] = 0;
-      } //CHECK THAT NEW COOR ARE VALID
+      } //GENERATES COORDINATES AND PIV SHIFTED IN EVERY DIR
 
 
-      var new_coor_down = [];
+      var _this$shift_coor = this.shift_coor(new_coor, this.pivot, 1, 0),
+          new_coor_down = _this$shift_coor.new_coor_down,
+          new_piv_down = _this$shift_coor.new_piv_down;
 
-      for (var _i3 = 0; _i3 < 4; _i3++) {
-        var _temp = [];
-        _temp[0] = new_coor[_i3][0] + 1;
-        _temp[1] = new_coor[_i3][1];
-        new_coor_down[_i3] = _temp;
-      }
+      var _this$shift_coor2 = this.shift_coor(new_coor, this.pivot, -1, 0),
+          new_coor_up = _this$shift_coor2.new_coor_up,
+          new_piv_up = _this$shift_coor2.new_piv_up;
 
-      var new_piv_down = [this.pivot[0] + 1, this.pivot[1]];
-      var new_coor_up = [];
+      var _this$shift_coor3 = this.shift_coor(new_coor, this.pivot, 0, -1),
+          new_coor_left = _this$shift_coor3.new_coor_left,
+          new_piv_left = _this$shift_coor3.new_piv_left;
 
-      for (var _i4 = 0; _i4 < 4; _i4++) {
-        var _temp2 = [];
-        _temp2[0] = new_coor[_i4][0] - 1;
-        _temp2[1] = new_coor[_i4][1];
-        new_coor_up[_i4] = _temp2;
-      }
+      var _this$shift_coor4 = this.shift_coor(new_coor, this.pivot, 0, 1),
+          new_coor_right = _this$shift_coor4.new_coor_right,
+          new_piv_right = _this$shift_coor4.new_piv_right; //CHECKS THAT NEW POSSIBLE COOR ARE VALID
 
-      var new_piv_up = [this.pivot[0] - 1, this.pivot[1]];
-      var new_coor_left = [];
-
-      for (var _i5 = 0; _i5 < 4; _i5++) {
-        var _temp3 = [];
-        _temp3[0] = new_coor[_i5][0];
-        _temp3[1] = new_coor[_i5][1] - 1;
-        new_coor_left[_i5] = _temp3;
-      }
-
-      var new_piv_left = [this.pivot[0], this.pivot[1] - 1];
-      var new_coor_right = [];
-
-      for (var _i6 = 0; _i6 < 4; _i6++) {
-        var _temp4 = [];
-        _temp4[0] = new_coor[_i6][0];
-        _temp4[1] = new_coor[_i6][1] + 1;
-        new_coor_right[_i6] = _temp4;
-      }
-
-      var new_piv_right = [this.pivot[0], this.pivot[1] + 1];
 
       if (this.coor_is_valid(new_coor)) {
         var throw_away;
@@ -284,16 +263,51 @@ function () {
       } //GO THROUGH AND REPLACE each coor WITH new_coor TO MAKE ROTATED PIECE
 
 
-      for (var _i7 = 0; _i7 < 4; _i7++) {
-        this.board[new_coor[_i7][0]][new_coor[_i7][1]] = typ;
+      for (var _i3 = 0; _i3 < 4; _i3++) {
+        this.board[new_coor[_i3][0]][new_coor[_i3][1]] = typ;
       }
 
       this.update_ghost();
       return new_coor;
     }
   }, {
+    key: "shift_coor",
+    value: function shift_coor(Coordinates, piv, ver, hor) {
+      //SHIFTS COOR IN A GIVEN DIR
+      var shifted_coor = [];
+
+      for (var i = 0; i < 4; i++) {
+        var temp = [];
+        temp[0] = Coordinates[i][0] + ver;
+        temp[1] = Coordinates[i][1] + hor;
+        shifted_coor[i] = temp;
+      }
+
+      var shifted_piv = [piv[0] + ver, piv[1] + hor];
+      return [shifted_coor, shifted_piv];
+    }
+  }, {
+    key: "shift_piece",
+    value: function shift_piece(Coordinates, ver, hor) {
+      //SHIFTS COOR IN A GIVEN DIR
+      var typ = this.board[Coordinates[0][0]][Coordinates[0][1]];
+
+      for (var i = 0; i < 4; i++) {
+        this.board[Coordinates[i][0]][Coordinates[i][1]] = 0;
+      }
+
+      for (var _i4 = 0; _i4 < 4; _i4++) {
+        this.board[Coordinates[_i4][0] + ver][Coordinates[_i4][1] + hor] = typ;
+      }
+
+      this.pivot[0] += ver;
+      this.pivot[1] += hor;
+      this.update_ghost();
+    }
+  }, {
     key: "coor_is_valid",
     value: function coor_is_valid(coors) {
+      //CHECKS IF COOR IS VALID
       var flag = true;
 
       for (var i = 0; i < 4; i++) {
@@ -320,35 +334,10 @@ function () {
       //CHECKS IF MOVE LEFT IS POSSIBLE, THEN DOES IT, OTHERWISE NOTHING
       var coor = this.update_coor(); //grabs Coordinates
 
-      var flag = true;
+      var new_coor = this.shift_coor(coor, this.pivot, 0, -1)[0];
 
-      if (flag) {
-        for (var i = 0; i < 4; i++) {
-          var row = coor[i][0];
-          var col = coor[i][1];
-
-          if (col === 0 || this.board[row][col - 1] > 1) {
-            flag = false;
-          }
-        }
-      }
-
-      if (flag !== true) {
-        flag = false; //DOES NOTHING
-      } else {
-        //REMOVES THE SPOT AT EACH OF COORDINATES AND ADDS ONE BELOW EACH COORDINATE
-        var typ = this.board[coor[0][0]][coor[0][1]];
-
-        for (var _i8 = 0; _i8 < 4; _i8++) {
-          this.board[coor[_i8][0]][coor[_i8][1]] = 0;
-        }
-
-        for (var _i9 = 0; _i9 < 4; _i9++) {
-          this.board[coor[_i9][0]][coor[_i9][1] - 1] = typ;
-        }
-
-        this.pivot[1] -= 1;
-        this.update_ghost();
+      if (this.coor_is_valid(new_coor)) {
+        this.shift_piece(coor, 0, -1);
       }
     }
   }, {
@@ -357,35 +346,10 @@ function () {
       //CHECKS IF MOVE RIGHT IS POSSIBLE, THEN DOES IT, OTHERWISE NOTHING
       var coor = this.update_coor(); //grabs Coordinates
 
-      var flag = true;
+      var new_coor = this.shift_coor(coor, this.pivot, 0, 1)[0];
 
-      if (flag) {
-        for (var i = 0; i < 4; i++) {
-          var row = coor[i][0];
-          var col = coor[i][1];
-
-          if (col === this.board[0].length - 1 || this.board[row][col + 1] > 1) {
-            flag = false;
-          }
-        }
-      }
-
-      if (flag !== true) {
-        flag = false; //DOES NOTHING
-      } else {
-        //REMOVES THE SPOT AT EACH OF COORDINATES AND ADDS ONE BELOW EACH COORDINATE
-        var typ = this.board[coor[0][0]][coor[0][1]];
-
-        for (var _i10 = 0; _i10 < 4; _i10++) {
-          this.board[coor[_i10][0]][coor[_i10][1]] = 0;
-        }
-
-        for (var _i11 = 0; _i11 < 4; _i11++) {
-          this.board[coor[_i11][0]][coor[_i11][1] + 1] = typ;
-        }
-
-        this.pivot[1] += 1;
-        this.update_ghost();
+      if (this.coor_is_valid(new_coor)) {
+        this.shift_piece(coor, 0, 1);
       }
     }
   }, {
@@ -412,7 +376,7 @@ function () {
         for (var col = 0; col < this.width; col++) {
           if (this.board[row][col] === 1) {
             //Used to add 2 points times level times the number of levels dropped
-            diff = 2 * (row - coor[0][0]);
+            diff = 2 * (row - coor[0][0] - 1);
             this.board[row][col] = this.board[coor[0][0]][coor[0][1]];
           }
         }
@@ -443,8 +407,8 @@ function () {
       } else {
         var temp = 1 * -this.board[coor[0][0]][coor[0][1]];
 
-        for (var _i12 = 0; _i12 < 4; _i12++) {
-          this.board[coor[_i12][0]][coor[_i12][1]] = 0;
+        for (var _i5 = 0; _i5 < 4; _i5++) {
+          this.board[coor[_i5][0]][coor[_i5][1]] = 0;
         }
 
         this.gen_piece(true, this.hold);
@@ -470,12 +434,10 @@ function () {
   }, {
     key: "solidify_piece",
     value: function solidify_piece() {
-      for (var row = 0; row < this.height; row++) {
-        for (var col = 0; col < this.width; col++) {
-          if (this.board[row][col] < 0) {
-            this.board[row][col] = -this.board[row][col];
-          }
-        }
+      var coor = this.update_coor();
+
+      for (var i = 0; i < 4; i++) {
+        this.board[coor[i][0]][coor[i][1]] *= -1;
       }
 
       this.line_cleared_check();
@@ -519,11 +481,11 @@ function () {
         }
       }
 
-      for (var _i13 = 0; _i13 < 4; _i13++) {
-        var _spot = this.board[coor[_i13][0] + ghost_dist][coor[_i13][1]];
+      for (var _i6 = 0; _i6 < 4; _i6++) {
+        var _spot = this.board[coor[_i6][0] + ghost_dist][coor[_i6][1]];
 
         if (_spot === 0) {
-          this.board[coor[_i13][0] + ghost_dist][coor[_i13][1]] = 1;
+          this.board[coor[_i6][0] + ghost_dist][coor[_i6][1]] = 1;
         }
       }
 
@@ -551,28 +513,28 @@ function () {
       var cleared_lines_len = rows_clear.length;
       this.score_increase(cleared_lines_len);
 
-      for (var _i14 = 0; _i14 < cleared_lines_len; _i14++) {
-        for (var _j = 0; _j < this.board[rows_clear[_i14]].length; _j++) {
-          this.board[rows_clear[_i14]][_j] = 0;
+      for (var _i7 = 0; _i7 < cleared_lines_len; _i7++) {
+        for (var _j = 0; _j < this.board[rows_clear[_i7]].length; _j++) {
+          this.board[rows_clear[_i7]][_j] = 0;
         }
       }
 
       var row_cleared_max = Math.max.apply(Math, rows_clear);
 
-      for (var _i15 = row_cleared_max; _i15 >= 0; _i15--) {
-        for (var _j2 = 0; _j2 < this.board[_i15].length; _j2++) {
-          if (this.board[_i15][_j2] > 1) {
+      for (var _i8 = row_cleared_max; _i8 >= 0; _i8--) {
+        for (var _j2 = 0; _j2 < this.board[_i8].length; _j2++) {
+          if (this.board[_i8][_j2] > 1) {
             var counter = 0;
 
             for (var each = 0; each < cleared_lines_len; each++) {
-              if (rows_clear[each] > _i15) {
+              if (rows_clear[each] > _i8) {
                 counter++;
               }
             }
 
-            var temp = this.board[_i15][_j2];
-            this.board[_i15][_j2] = 0;
-            this.board[_i15 + counter][_j2] = temp;
+            var temp = this.board[_i8][_j2];
+            this.board[_i8][_j2] = 0;
+            this.board[_i8 + counter][_j2] = temp;
           }
         }
       }
