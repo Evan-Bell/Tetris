@@ -55,13 +55,42 @@ var gameBoard = new Board(width, height);
           console.log('enter press here! ')
         }
     }
+
+    handleInput(event){ //MAKE THIS AUTOCLICK INSTEAD OF HAVING TO GO INTO TEXT BOX
+        switch(event.key) {
+            case 'ArrowLeft': 
+                gameBoard.move_left();
+              break;
+            case 'ArrowRight': 
+                gameBoard.move_right();
+                break;
+            case 'ArrowDown': 
+                gameBoard.move_drop();
+                break;
+            case 'ArrowUp': 
+                gameBoard.rotate_piece();
+                break;
+            case 'h':
+                gameBoard.move_hold_swap();
+                break;
+            case '-':
+                gameBoard.stop_drop();
+                break;
+            case '=':
+                gameBoard.start_drop();
+                break;
+            case ' ':
+                gameBoard.hard_drop();
+                break;
+        }
+    }
     
     
     render() {
         return (
             <div className="TetrisGame">
                 <h2>{`Interval: ${this.interval}`}</h2>
-                <input type='text' onKeyPress={this.handleKeyPress} />
+                <input type='text' onKeyDown={this.handleInput} onChange={e => this.update_board()}/>
                 <input type="range" min="1" value={this.interval} max="100" onChange={e => this.update_board()}/>
                 <ControlsDisplay inputboard={this.state.game_board}/>
                 <StylizedBoardDisplay inputboard={this.state.game_board} inputheight={height} inputwidth={width}/>
