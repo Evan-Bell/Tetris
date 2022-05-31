@@ -15,41 +15,35 @@ function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) ||
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-//1
+//THIS CODE WAS TAKEN FROM https://betterprogramming.pub/create-a-typing-game-with-react-hooks-usekeypress-and-faker-28bbc7919820
+//I DID NOT WRITE IT
 var useKeyPress = function useKeyPress(callback) {
-  //2
   var _useState = (0, _react.useState)(),
       _useState2 = _slicedToArray(_useState, 2),
       keyPressed = _useState2[0],
-      setKeyPressed = _useState2[1]; //3
-
+      setKeyPressed = _useState2[1];
 
   (0, _react.useEffect)(function () {
-    //4
     var downHandler = function downHandler(_ref) {
       var key = _ref.key;
 
-      if (keyPressed !== key && key.length === 1) {
+      if (key.length === 1) {
         setKeyPressed(key);
         callback && callback(key);
       }
-    }; //5
-
+    };
 
     var upHandler = function upHandler() {
       setKeyPressed(null);
-    }; //6
-
+    };
 
     window.addEventListener('keydown', downHandler);
     window.addEventListener('keyup', upHandler);
     return function () {
-      //7
       window.removeEventListener('keydown', downHandler);
       window.removeEventListener('keyup', upHandler);
     };
-  }); //8
-
+  });
   return keyPressed;
 };
 

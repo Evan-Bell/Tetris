@@ -30,7 +30,7 @@ export default function StylizedBoardDisplay(props) {
             {rows_ind.map((row) => (
                 <tr className='TetrisRow' id={r+row}> 
                     <td className='TetrisCell' id={c+'Border'}></td>
-                    {game_board.board[row].map((col) => <td className='TetrisCell' id={c+col}></td> )} 
+                    {game_board[row].map((col) => <td className='TetrisCell' id={c+col}></td> )} 
                     <td className='TetrisCell' id={c+'Border'}></td>
                 </tr>
             ))}

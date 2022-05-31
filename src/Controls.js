@@ -1,16 +1,16 @@
 import React from 'react';
 
 export default function ControlsDisplay(props) {
-    var game_board = props.inputboard
+    var gameBoard = props.inputboard
     return (
         <div className="TetrisControls">
-            <div className='score-display'>Score: {game_board.score}</div>
-            <div className='level-display'>Level: {game_board.level}</div>
-            <div className='hold-display'>Hold: {game_board.hold}</div>
-            <div className='next-display'>Next: {game_board.next}</div>
-            <div className='highscore-display'>Highscore: {game_board.highscore}</div>
-            <div className='highlevel-display'>Highlevel: {game_board.highlevel}</div>
-            <div className='droptime'>droptime: {game_board.droptime}</div>
+            <div className='score-display'>Score: {gameBoard.score}</div>
+            <div className='level-display'>Level: {gameBoard.level}</div>
+            <div className='hold-display'>Hold: {gameBoard.hold}</div>
+            <div className='next-display'>Next: {gameBoard.next}</div>
+            <div className='highscore-display'>Highscore: {gameBoard.highscore}</div>
+            <div className='highlevel-display'>Highlevel: {gameBoard.highlevel}</div>
+            <div className='droptime'>droptime: {gameBoard.droptime}</div>
         </div>
     );
 }

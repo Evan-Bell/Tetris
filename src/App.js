@@ -1,66 +1,103 @@
-import React from 'react'
+import React from 'react';
 import { useState, useEffect } from 'react';
 import StylizedBoardDisplay from "./BoardDisplay"
-import ControlsDisplay from './Controls';
-import Board from "./game"
-import useKeyPress from './useKeyPress';
-
-
-
+import ControlsDisplay from './Controls'
+import Board from './game'
+import useKeyPress from './useKeyPress'
 
 const width = 10;
 const height = 24; //playable height is 20
-
-
+var today = new Date();
 var gameBoard = new Board(width, height);
-
+gameBoard.start_drop()
 
 function App() {
-
-    const [game_board, update_board] = useState[gameBoard.board]
+    const [game_board, setBoard] = useState(gameBoard.board)
+    const [time, setTime] = useState(Date.now());
 
     useEffect(() => {
-        this.timerID = setInterval(
-            () => update_board(gameBoard.board),
-            100
-          );
-      }, gameBoard.board)
+    const interval = setInterval(() => setTime(Date.now()), 50);
+    return () => {
+        const update_board = async () => {
+            const data = await setBoard(gameBoard.board);
+          }
+        update_board()
+        clearInterval(interval);
+    };
+    }, []);
 
     useKeyPress(key => {
+        console.log(gameBoard.interval)
+        console.log(key)
         switch(key) {
-            case 'ArrowLeft': 
-                gameBoard.move_left();
-              break;
-            case 'ArrowRight': 
-                gameBoard.move_right();
+            case 'a': 
+                var make_move = async () => {
+                    var data = await gameBoard.move_left();
+                }
+                make_move();
                 break;
-            case 'ArrowDown': 
-                gameBoard.move_drop();
+
+            case 'd': 
+                var make_move = async () => {
+                    var data = await gameBoard.move_right();
+                }
+                make_move();
                 break;
-            case 'ArrowUp': 
-                gameBoard.rotate_piece();
+
+            case 's': 
+                var make_move = async () => {
+                    var data = await gameBoard.move_drop();
+                }
+                make_move();
                 break;
+
+            case 'w': 
+                var make_move = async () => {
+                    var data = await gameBoard.rotate_piece();
+                }
+                make_move();
+                break;
+
             case 'h':
-                gameBoard.move_hold_swap();
+                var make_move = async () => {
+                    var data = await gameBoard.move_hold_swap();
+                }
+                make_move();
                 break;
+
             case '-':
-                gameBoard.stop_drop();
+                var make_move = async () => {
+                    var data = await gameBoard.stop_drop();
+                }
+                make_move();
                 break;
+
             case '=':
-                gameBoard.start_drop();
+                var make_move = async () => {
+                    const data = await gameBoard.start_drop();
+                }
+                make_move();
                 break;
+
             case ' ':
-                gameBoard.hard_drop();
+                var make_move = async () => {
+                    const data = await gameBoard.hard_drop();
+                }
+                make_move();
                 break;
         };
+        const update_board = async () => {
+            const data = await setBoard(gameBoard.board);
+          }
+        update_board()
     });
 
-    return(
-            <div className="TetrisGame">
-                <ControlsDisplay inputboard={game_board}/>
-                <StylizedBoardDisplay inputboard={game_board} inputheight={height} inputwidth={width}/>
-            </div>
-    )
+    return (
+        <div className="TetrisGame">
+            <ControlsDisplay inputboard={gameBoard}/>
+            <StylizedBoardDisplay inputboard={game_board} inputheight={height} inputwidth={width}/>
+        </div>
+    );
 }
 
 export default App;
