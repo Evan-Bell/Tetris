@@ -1,5 +1,4 @@
 import React from 'react';
-import Board from "./game"
 
 export default function ControlsDisplay(props) {
     var game_board = props.inputboard

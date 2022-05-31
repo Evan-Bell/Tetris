@@ -1,10 +1,5 @@
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports["default"] = void 0;
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -678,4 +673,70 @@ function () {
   return Board;
 }();
 
-exports["default"] = Board;
+var width = 10;
+var height = 24; //playable height is 20
+
+var gameBoard = new Board(width, height);
+
+function print_board(board) {
+  for (var g = 0; g < board.length; g++) {
+    console.log(board[g]);
+  }
+}
+
+var readline = require('readline').createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+function run_it() {
+  readline.question('How many times: __', function (name) {
+    console.log(name + " times. Start");
+    var startDate = new Date();
+
+    for (var i = 0; i < parseInt(name); i++) {
+      var num = Math.floor(Math.random() * 6);
+      var check = 0;
+
+      if (num == 0) {
+        check = gameBoard.move_left();
+      }
+
+      if (num == 1) {
+        check = gameBoard.move_right();
+      }
+
+      if (num == 2) {
+        check = gameBoard.hard_drop();
+      }
+
+      if (num == 3) {
+        check = gameBoard.move_drop();
+      }
+
+      if (num == 4) {
+        check = gameBoard.move_hold_swap();
+      }
+
+      if (num == 5) {
+        check = gameBoard.rotate_piece();
+      } else {
+        check = 1;
+      }
+
+      while (check == 0) {
+        var r = 1;
+      }
+    }
+
+    var endDate = new Date();
+    var seconds = (endDate.getTime() - startDate.getTime()) / 1000;
+    console.log(name + "  : " + seconds);
+    console.log(parseInt(name) / parseFloat(seconds));
+    console.log("\n\n");
+    readline.close();
+    run_it();
+  });
+}
+
+run_it();

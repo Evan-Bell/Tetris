@@ -1,8 +1,8 @@
 /*
 RULES FOR TETRIS
 
-SIZE OF BOARD = 10 WIDE, 20 TALL (24 TALL, BUT ADDITIONAL 4 ARE NOT IN PLAY)
-TYPES OF PIECES = { ALL ARE SIZE 4
+SIZE OF BOARD = 10 WIDE, 20 TALL (24 TALL, BUT TOP 4 ARE NOT IN PLAY)
+TYPES OF PIECES = { ALL ARE SIZE 4 SQUARES :
   T, 
   SQUARE, 
   LEFT L,
@@ -25,17 +25,13 @@ ACTIONS AVAIBLE = {
 "HOLD" contains 1 piece which swaps with the piece in play
 
 
-SCORING = { BASED ON LEVEL (N) AND NUMBER OF LINES CLEARED AT ONCE
+SCORING = { BASED ON LEVEL (N) MULTIPLIED BY  NUMBER OF LINES CLEARED AT ONCE
   ONE LINE = 40(N+1)
   TWO LINES = 100(N+1)
   THREE LINES 300(N+1)
   FOUR LINES 1200(N+1)
 }
 */
-
-import React from "react";
-import ReactDOM from "react-dom";
-
 export default class Board {
   //USED TO INITIALIZE THE BOARD
 
@@ -54,6 +50,7 @@ export default class Board {
       [0, 0],
     ];
     this.hold = 0;
+    this.hold_swapped = false
     this.next = [0, 0, 0]; //stores next three not including one in play
     this.highlevel = 0;
     this.highscore = 0;
@@ -92,6 +89,8 @@ export default class Board {
     (FOR PIECES THAT ARE NOT PLACES, THE CODE WILL BE NEGATIVE THE NUMBER, SO UNPLACED T IS -1)
   }
   */
+
+
 
   gen_piece(mutate, specific_piece) {
     //GENERATES A NEW PIECE
@@ -146,7 +145,7 @@ export default class Board {
         [0, 1],
         [1, 0], //RELATIVE PIVOT POINT
       ],
-    };
+    };  
 
     if(this.pieces.length === 0){ //MAKES IT SO THAT EACH PIECE GETS GIVEN EVENLY
       this.pieces = [2,3,4,5,6,7,8];
@@ -339,6 +338,7 @@ export default class Board {
     if(this.coor_is_valid(new_coor)){
       this.shift_piece(coor, 0, -1)
     }
+    return true
   }
 
 
@@ -350,6 +350,7 @@ export default class Board {
     if(this.coor_is_valid(new_coor)){
       this.shift_piece(coor, 0, 1)
     }
+    return true
   }
 
 
@@ -384,29 +385,32 @@ export default class Board {
     this.score_increase(diff*100);
     this.solidify_piece();
     this.over_stack_check();
+    return true
   }
 
 
 
   move_hold_swap() {
-    //SWAPS INTO HOLD
-
-    let coor = this.update_coor();
-    if (this.hold < 2) {
-      this.hold = -this.board[coor[0][0]][coor[0][1]];
-      for (let i = 0; i < 4; i++) {
-        this.board[coor[i][0]][coor[i][1]] = 0;
+    if(this.hold_swapped === false) {
+      //SWAPS INTO HOLD
+      let coor = this.update_coor();
+      if (this.hold < 2) {
+        this.hold = -this.board[coor[0][0]][coor[0][1]];
+        for (let i = 0; i < 4; i++) {
+          this.board[coor[i][0]][coor[i][1]] = 0;
+        }
+        this.next_piece_grab();
+      } else {
+        let temp = 1 * -this.board[coor[0][0]][coor[0][1]];
+        for (let i = 0; i < 4; i++) {
+          this.board[coor[i][0]][coor[i][1]] = 0;
+        }
+        this.gen_piece(true, this.hold);
+        this.hold = 1 * temp; //copies without same memory
       }
-      this.next_piece_grab();
-    } else {
-      let temp = 1 * -this.board[coor[0][0]][coor[0][1]];
-      for (let i = 0; i < 4; i++) {
-        this.board[coor[i][0]][coor[i][1]] = 0;
-      }
-      this.gen_piece(true, this.hold);
-      this.hold = 1 * temp; //copies without same memory
+      this.hold_swapped = true;
+      return this.hold;
     }
-    return this.hold;
   }
 
 
@@ -431,6 +435,7 @@ export default class Board {
     for (let i = 0; i < 4; i++) {
       this.board[coor[i][0]][coor[i][1]] *= -1;
     }
+    this.hold_swapped = false;
     this.line_cleared_check();
     this.next_piece_grab();
   }
@@ -558,6 +563,7 @@ export default class Board {
       [0, 0],
     ];
     this.hold = 0;
+    this.hold_swapped = false;
     this.next = [0, 0, 0]; //stores next three not including one in play
     this.create_board();
     return [level, score];
