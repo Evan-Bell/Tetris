@@ -5,6 +5,14 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -256,21 +264,30 @@ function () {
 
 
       var _this$shift_coor = this.shift_coor(new_coor, this.pivot, 1, 0),
-          new_coor_down = _this$shift_coor.new_coor_down,
-          new_piv_down = _this$shift_coor.new_piv_down;
+          _this$shift_coor2 = _slicedToArray(_this$shift_coor, 2),
+          new_coor_down = _this$shift_coor2[0],
+          new_piv_down = _this$shift_coor2[1];
 
-      var _this$shift_coor2 = this.shift_coor(new_coor, this.pivot, -1, 0),
-          new_coor_up = _this$shift_coor2.new_coor_up,
-          new_piv_up = _this$shift_coor2.new_piv_up;
+      var _this$shift_coor3 = this.shift_coor(new_coor, this.pivot, -1, 0),
+          _this$shift_coor4 = _slicedToArray(_this$shift_coor3, 2),
+          new_coor_up = _this$shift_coor4[0],
+          new_piv_up = _this$shift_coor4[1];
 
-      var _this$shift_coor3 = this.shift_coor(new_coor, this.pivot, 0, -1),
-          new_coor_left = _this$shift_coor3.new_coor_left,
-          new_piv_left = _this$shift_coor3.new_piv_left;
+      var _this$shift_coor5 = this.shift_coor(new_coor, this.pivot, 0, -1),
+          _this$shift_coor6 = _slicedToArray(_this$shift_coor5, 2),
+          new_coor_left = _this$shift_coor6[0],
+          new_piv_left = _this$shift_coor6[1];
 
-      var _this$shift_coor4 = this.shift_coor(new_coor, this.pivot, 0, 1),
-          new_coor_right = _this$shift_coor4.new_coor_right,
-          new_piv_right = _this$shift_coor4.new_piv_right; //CHECKS THAT NEW POSSIBLE COOR ARE VALID
+      var _this$shift_coor7 = this.shift_coor(new_coor, this.pivot, 0, 1),
+          _this$shift_coor8 = _slicedToArray(_this$shift_coor7, 2),
+          new_coor_right = _this$shift_coor8[0],
+          new_piv_right = _this$shift_coor8[1];
 
+      console.log(new_coor);
+      console.log(new_coor_down);
+      console.log(new_coor_left);
+      console.log(new_coor_right);
+      console.log(new_coor_up); //CHECKS THAT NEW POSSIBLE COOR ARE VALID
 
       if (this.coor_is_valid(new_coor)) {
         var throw_away;

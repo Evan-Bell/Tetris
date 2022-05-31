@@ -245,10 +245,17 @@ export default class Board {
     }
 
     //GENERATES COORDINATES AND PIV SHIFTED IN EVERY DIR
-    let {new_coor_down, new_piv_down} = this.shift_coor(new_coor, this.pivot, 1, 0);
-    let {new_coor_up, new_piv_up}= this.shift_coor(new_coor, this.pivot, -1, 0);
-    let {new_coor_left, new_piv_left} = this.shift_coor(new_coor, this.pivot, 0, -1);
-    let {new_coor_right, new_piv_right} = this.shift_coor(new_coor, this.pivot, 0, 1);
+    let [new_coor_down, new_piv_down] = this.shift_coor(new_coor, this.pivot, 1, 0);
+    let [new_coor_up, new_piv_up]= this.shift_coor(new_coor, this.pivot, -1, 0);
+    let [new_coor_left, new_piv_left] = this.shift_coor(new_coor, this.pivot, 0, -1);
+    let [new_coor_right, new_piv_right] = this.shift_coor(new_coor, this.pivot, 0, 1);
+
+    console.log(new_coor)
+    console.log(new_coor_down)
+    console.log(new_coor_left)
+    console.log(new_coor_right)
+    console.log(new_coor_up)
+
 
     //CHECKS THAT NEW POSSIBLE COOR ARE VALID
     if (this.coor_is_valid(new_coor)) {
@@ -334,6 +341,7 @@ export default class Board {
   move_left() {
     //CHECKS IF MOVE LEFT IS POSSIBLE, THEN DOES IT, OTHERWISE NOTHING
     let coor = this.update_coor(); //grabs Coordinates
+
     let new_coor = this.shift_coor(coor, this.pivot, 0, -1)[0];
     if(this.coor_is_valid(new_coor)){
       this.shift_piece(coor, 0, -1)
