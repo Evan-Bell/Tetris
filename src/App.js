@@ -15,6 +15,13 @@ function App() {
     const [game_board, setBoard] = useState(gameBoard.board)
     const [time, setTime] = useState(Date.now());
 
+    onload(() => {
+        gameBoard.stop_drop()
+        alert('Press "OK" to be given rules');
+        alert("The 'A' and 'D' keys shift the piece sideways. The 'W' key rotates the active piece. The 'S' key performs a single drop. The Space Bar performs a full piece drop. The 'H' key will swap with the piece in the HOLD slot. You can view both the HOLD piece and the NEXT pieces up above. The piece will drop automatically periodically, and the interval will decrease as score increases. Press the '-' key to pause the game, and the '+' key to resume. Press Ok here to start the game.");
+        gameBoard.start_drop()
+    });
+
     useEffect(() => {
     const interval = setInterval(() => setTime(Date.now()), 50);
     return () => {
